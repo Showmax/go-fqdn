@@ -26,7 +26,7 @@ func Get() string {
 				return hostname
 			}
 			hosts, err := net.LookupAddr(string(ip))
-			if err != nil {
+			if len(hosts) == 0 || err != nil {
 				return hostname
 			}
 			fqdn := hosts[0]
