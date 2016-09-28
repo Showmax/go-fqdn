@@ -29,7 +29,7 @@ func Get() string {
 			if err != nil || len(hosts) == 0 {
 				return hostname
 			}
-			if len(hosts) > 0 {
+			if len(hosts) == 0 {
 				return "unknow"
 			}
 			fqdn := hosts[0]
