@@ -1,0 +1,67 @@
+name: Go
+
+on:
+  push:
+    branches: '*'
+  pull_request:
+    branches: '*'
+
+jobs:
+
+  gofmt:
+    name: No suggestions from gofmt
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: '1.14'
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: gofmt
+        run: |
+          gofmt_out=/tmp/gofmt.out
+          git ls-files -cmoz --exclude-standard '*.go' \
+            | sort -z \
+            | xargs -0 gofmt -l -s -d >"$gofmt_out"
+          if [ "$(wc -c "$gofmt_out" | awk '{print $1}')" -ne 0 ]; then
+            cat >&2 <"$gofmt_out"
+            exit 1
+          fi
+
+  build_test:
+    name: Build and test
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+          - windows-latest
+        go:
+          - '1.13'
+          - '1.14'
+
+    steps:
+
+      - name: Set up Go
+        uses: actions/setup-go@v1
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Build
+        run: go build -v ./...
+
+      - name: Test
+        run: go test -v ./...
+
+      - name: Test race
+        run: go test -v -race ./...
