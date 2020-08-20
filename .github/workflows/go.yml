@@ -17,7 +17,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v1
         with:
-          go-version: '1.14'
+          go-version: '1.15'
 
       - name: Checkout code
         uses: actions/checkout@v2
@@ -33,6 +33,18 @@ jobs:
             exit 1
           fi
 
+  golangci-lint:
+    name: No errors from golangci-lint
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Run golangci-lint
+        uses: actions-contrib/golangci-lint@v1
+
   build_test:
     name: Build and test
     runs-on: ${{ matrix.os }}
@@ -44,8 +56,8 @@ jobs:
           - ubuntu-latest
           - windows-latest
         go:
-          - '1.13'
           - '1.14'
+          - '1.15'
 
     steps:
 
@@ -60,8 +72,21 @@ jobs:
       - name: Build
         run: go build -v ./...
 
-      - name: Test
-        run: go test -v ./...
+      - name: Test go
+        env:
+          CGO_ENABLED: '0'
+        run: go test -v -tags DEBUG ./...
+        # Resolving on macos does not work as expected when using pure-go
+        # resolver. In particular, net.LookupHost(os.Hostname()) fails with
+        # `no such host'. See readme for more details on this defect.
+        if: matrix.os != 'macos-latest'
 
-      - name: Test race
-        run: go test -v -race ./...
+      - name: Test cgo
+        env:
+          CGO_ENABLED: '1'
+        run: go test -v -tags DEBUG ./...
+
+      - name: Test cgo race
+        env:
+          CGO_ENABLED: '1'
+        run: go test -v -tags DEBUG -race ./...
