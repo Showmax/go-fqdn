@@ -110,29 +110,33 @@ func TestMatchHostname(t *testing.T) {
 
 func TestParseHosts(t *testing.T) {
 	testCases := []struct {
+		err   error
 		hosts string
 		host  string
 		fqdn  string
-		err   error
 	}{
 		{
+			nil,
 			`# Static table lookup for hostnames.
 # See hosts(5) for details.
-127.0.0.1       foo`, "foo", "foo", nil,
+127.0.0.1       foo`, "foo", "foo",
 		},
 		{
+			nil,
 			`# Static table lookup for hostnames.
 # See hosts(5) for details.
-127.0.0.1       bar.foo foo`, "foo", "bar.foo", nil,
+127.0.0.1       bar.foo foo`, "foo", "bar.foo",
 		},
 		{
+			nil,
 			`# Static table lookup for hostnames.
 # See hosts(5) for details.
 127.0.0.1       yy bar
 127.0.0.1       bar.foo foo
-127.0.0.1       xx bar`, "foo", "bar.foo", nil,
+127.0.0.1       xx bar`, "foo", "bar.foo",
 		},
 		{
+			nil,
 			// This one is interesting, since it hostname -f with
 			// this /etc/hosts gives you different results on musl-c
 			// and glibc. I've picked the glibc behaviour, since we
@@ -140,7 +144,7 @@ func TestParseHosts(t *testing.T) {
 			`# Static table lookup for hostnames.
 # See hosts(5) for details.
 127.0.0.1       bar.foo foo
-127.0.0.1       foo.bar foo`, "foo", "bar.foo", nil,
+127.0.0.1       foo.bar foo`, "foo", "bar.foo",
 		},
 	}
 
