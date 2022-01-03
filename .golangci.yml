@@ -11,14 +11,13 @@ linters-settings:
 linters:
   enable:
     - dogsled
+    - exportloopref
     - gochecknoglobals
     - gochecknoinits
     - goconst
     - gomnd
     - goprintffuncname
-    - maligned
     - nakedret
-    - scopelint
     - unconvert
     - unparam
 
@@ -30,3 +29,7 @@ issues:
 
   max-issues-per-linter: 0
   max-same-issues: 0
+
+govet:
+  enable:
+    - fieldalignment
