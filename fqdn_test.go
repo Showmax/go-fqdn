@@ -109,7 +109,7 @@ func TestMatchHostname(t *testing.T) {
 }
 
 func TestParseHosts(t *testing.T) {
-	testCases := []struct {
+	testCases := []struct { //nolint:govet
 		hosts string
 		host  string
 		fqdn  string
