@@ -1,3 +1,4 @@
+//go:build !DEBUG
 // +build !DEBUG
 
 package fqdn
